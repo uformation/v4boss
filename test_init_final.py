@@ -2193,6 +2193,7 @@ while True:
 								boss_information[cnt] = boss_information[cnt] + ouput_bossData[i][3] + ' ' + ouput_bossData[i][2] + ' : ' + ouput_bossData[i][0] + ' (멍 ' + str(ouput_bossData[i][5]) + '회)' + ' ' + ouput_bossData[i][6] + '\n'
 
 			###########################고정보스출력
+"""
 			if len(fixedboss_information[0]) != 0:
 				fixedboss_information[0] = "```diff\n" + fixedboss_information[0] + "\n```"
 			else :
@@ -2216,6 +2217,7 @@ while True:
 						color=0x0000ff
 						)
 				await ctx.send( embed=embed, tts=False)
+"""
 
 			###########################일반보스출력
 			if len(boss_information[0]) != 0:
