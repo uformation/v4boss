@@ -729,6 +729,7 @@ class taskCog(commands.Cog):
 	@tasks.loop(seconds=1.0, count=1)
 	async def main_task(self):
 		boss_task = asyncio.get_event_loop().create_task(self.boss_check())
+		await boss_task
 
 	@main_task.before_loop
 	async def before_tast(self):
@@ -759,8 +760,8 @@ class taskCog(commands.Cog):
 			if ctx.voice_client.is_playing():
 				ctx.voice_client.stop()
 			await ctx.voice_client.disconnect()
-		boss_task = asyncio.get_event_loop().create_task(self.boss_check())
-		return
+		boss_task = asyncio.Task(self.boss_check())
+        
 
 	async def boss_check(self):
 		await self.bot.wait_until_ready()
@@ -996,8 +997,27 @@ class taskCog(commands.Cog):
 										await PlaySound(voice_client1, './sound/' + bossData[i][0] + '멍.mp3')
 
 			await asyncio.sleep(1) # task runs every 60 seconds
+		
+		if voice_client1 is not None:
+			if voice_client1.is_playing():
+				voice_client1.stop()
+			await voice_client1.disconnect()
 
-		await boss_check()
+		for t in asyncio.Task.all_tasks():
+			if t._coro.__name__ == f"boss_check":
+				print("-------------")
+				if t.done():
+					try:
+						t.exception()
+					except asyncio.CancelledError:
+						continue
+					continue
+				t.cancel()
+		await dbSave()
+		await data_list_Save("kill_list.ini", "-----척살명단-----", kill_Data)
+		await data_list_Save("item_list.ini", "-----아이템목록-----", item_Data)
+
+		boss_task = asyncio.Task(self.boss_check())
 
 class mainCog(commands.Cog): 
 	def __init__(self, bot):
